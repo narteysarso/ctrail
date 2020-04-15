@@ -4,19 +4,19 @@ services:
 
  #build build all development version and ready for testing
 before_install:
-    - docker build -t narteysarso/contact-tracing-client -f ./frontend/Dockerfile.dev ./frontend
+    - docker build -t narteysarso/contact-tracing-client-test -f ./frontend/Dockerfile.dev ./frontend
     #- add all other tests required
 
 #run scripts for test builds
 script:
-    - docker run narteysarso/contact-tracing-client yarn run test --watchAll=false
+    - docker run narteysarso/contact-tracing-client-test yarn run test --watchAll=false
 
 after_success:
     - docker build -t narteysarso/contact-tracing-client ./frontend
-    # - docker build -t narteysarso/contact-tracing-ngnix ./ngnix
+    - docker build -t narteysarso/contact-tracing-nginx ./nginx
 
-    # #Login to hub.docker.com and push docker images
-    # echo "$DOCKER_PASSWORD" | docker login -u "DOCKER_ID" --password-stdin
-    # #Take images and push to docker hub
-    # docker push narteysarso/contact-tracing-client
-    # docker push narteysarso/contact-tracing-ngnix
+    #Login to hub.docker.com and push docker images
+    - echo "$DOCKER_PASSWORD" | docker login -u "DOCKER_ID" --password-stdin
+    #Take images and push to docker hub
+    - docker push narteysarso/contact-tracing-client
+    - docker push narteysarso/contact-tracing-ngnix
