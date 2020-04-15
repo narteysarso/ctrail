@@ -12,6 +12,7 @@ script:
     - docker run narteysarso/contact-tracing-client-test yarn run test --watchAll=false
 
 after_success:
+    - docker build narteysarso/contact-tracing-api ./backend
     - docker build -t narteysarso/contact-tracing-client ./frontend
     - docker build -t narteysarso/contact-tracing-nginx ./nginx
 
