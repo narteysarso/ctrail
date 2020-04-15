@@ -76,58 +76,58 @@ module.exports.createUser = async (event, context, callback) => {
 }
 
 
-module.exports.registerUser = async (event, context, callback) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+// module.exports.registerUser = async (event, context, callback) => {
+//     context.callbackWaitsForEmptyEventLoop = false;
 
-    try {
+//     try {
 
-        if (!event.body)
-            throw ("No data submitted");
+//         if (!event.body)
+//             throw ("No data submitted");
 
 
-        const data = JSON.parse(event.body);
+//         const data = JSON.parse(event.body);
 
-        const searchResult = await listUsers({$or : [{email: data.email},{phone: data.phone}]});
+//         const searchResult = await listUsers({$or : [{email: data.email},{phone: data.phone}]});
 
-        if(searchResult.length){
-            const error = new Error("Already email and phone already taken");
-            error.statusCode = 400;
-            throw error;
-        }
+//         if(searchResult.length){
+//             const error = new Error("Already email and phone already taken");
+//             error.statusCode = 400;
+//             throw error;
+//         }
 
-        const roleId = ROLES["OWNER"];
+//         const roleId = ROLES["OWNER"];
 
-        if(!roleId){
-            const error = new Error("Failed to add user");
-            error.statusCode = 400;
-            throw error;
-        }
+//         if(!roleId){
+//             const error = new Error("Failed to add user");
+//             error.statusCode = 400;
+//             throw error;
+//         }
 
-        const passwordHash = await makePasswordHash(data.password);
+//         const passwordHash = await makePasswordHash(data.password);
 
-        const result = await addUser({...data, roleId, passwordHash});
+//         const result = await addUser({...data, roleId, passwordHash});
 
-        if(!result){
-            const error = new Error("Failed to add user");
-            error.statusCode = 500;
-            throw error;
-        }
+//         if(!result){
+//             const error = new Error("Failed to add user");
+//             error.statusCode = 500;
+//             throw error;
+//         }
 
-        callback(null, {
-            statusCode: 200,
-            body: JSON.stringify({data: result, message: "User registered"})
-        });
+//         callback(null, {
+//             statusCode: 200,
+//             body: JSON.stringify({data: result, message: "User registered"})
+//         });
 
-    }catch(error) {
-        console.log(error)
-        callback(null, {
-            statusCode: error.statusCode || 500,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "message": error.message })
-        });
-    }
+//     }catch(error) {
+//         console.log(error)
+//         callback(null, {
+//             statusCode: error.statusCode || 500,
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ "message": error.message })
+//         });
+//     }
 
-}
+// }
 
 
 /**

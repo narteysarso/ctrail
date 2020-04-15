@@ -8,16 +8,7 @@ provider:
   stage: dev # setting the env stage to dev, this will be visible in the routes
   region: us-east-1
 
-functions: # add 4 functions for CRUD
-  testShow:
-    handler: handler.show # point to exported create function in handler.js
-    events:
-      - http:
-          path: test # path will be domain.name.com/dev/point
-          method: get
-          cors: true
-  
-  
+functions: # add functions
   # User login
   loginUser:
     handler: handler.signIn # point to exported create function in handler.js
