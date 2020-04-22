@@ -9,6 +9,7 @@ provider:
   region: us-east-1
   environment:
     MONGO_PASSWORD:${opt:AWS_MONGO_PASSWORD}
+    MONGO_USERNAME:${opt:AWS_MONGO_USERNAME}
     MONGO_HOSTNAME:${opt:AWS_MONGO_HOSTNAME}
     MONGO_PORT:${opt:AWS_MONGO_PORT}
     MONGO_DB:${opt:AWS_MONGO_DB}
