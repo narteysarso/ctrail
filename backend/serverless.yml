@@ -2,19 +2,19 @@ service: rest-api
 
 provider:
   name: aws
-  runtime: nodejs12.16 # set node.js runtime
+  runtime: nodejs6.10 # set node.js runtime
   memorySize: 128 # set the maximum memory of the Lambdas in Megabytes
   timeout: 10 # the timeout is 10 seconds (default is 6 seconds)
   stage: dev # setting the env stage to dev, this will be visible in the routes
   region: us-east-1
-  environment:
-    MONGO_PASSWORD:${opt:AWS_MONGO_PASSWORD}
-    MONGO_HOSTNAME:${opt:AWS_MONGO_HOSTNAME}
-    MONGO_PORT:${opt:AWS_MONGO_PORT}
-    MONGO_DB:${opt:AWS_MONGO_DB}
-    JWT_KEY:${opt:AWS_JWT_KEY}
-    MAIL_USERNAME:${opt:AWS_MAIL_USERNAME}
-    MAIL_PASSWORD:${opt:AWS_MAIL_PASSWORD}
+  # environment:
+  #   MONGO_PASSWORD:${opt:AWS_MONGO_PASSWORD}
+  #   MONGO_HOSTNAME:${opt:AWS_MONGO_HOSTNAME}
+  #   MONGO_PORT:${opt:AWS_MONGO_PORT}
+  #   MONGO_DB:${opt:AWS_MONGO_DB}
+  #   JWT_KEY:${opt:AWS_JWT_KEY}
+  #   MAIL_USERNAME:${opt:AWS_MAIL_USERNAME}
+  #   MAIL_PASSWORD:${opt:AWS_MAIL_PASSWORD}
 
 functions: # add functions
   # User login
