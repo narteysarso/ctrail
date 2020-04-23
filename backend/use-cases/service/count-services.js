@@ -1,9 +1,9 @@
-module.exports = function makeCountPoints({ pointsDb }) {
+module.exports = function makeCountServices({ servicesDb }) {
 
     return async function (query) {
         try {
             query = query ? query : {};
-            const count = await pointsDb.countData(query);
+            const count = await servicesDb.countData(query);
             
             return count;
         } catch (error) {
