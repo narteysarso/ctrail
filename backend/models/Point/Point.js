@@ -5,11 +5,17 @@ const pointFactory = function({Id, sanitize}){
         code,
         longitude,
         latitude,
+        phone,
+        email,
         tags,
         movable = false,
+        isOpen = false,
         description,
+        imageUri,
         overseer,
+        category,
         overseerPhone,
+        services = [],
         authorId,
         createdAt = Date.now(),
         updatedAt = Date.now(),
@@ -37,6 +43,8 @@ const pointFactory = function({Id, sanitize}){
 
         if(description && !sanitizeText)
             throw new Error("No usable description");
+        
+        const loc = { type: 'Point', coordinates: [longitude, latitude] }
 
         return Object.freeze({
             getId: () => id,
@@ -44,15 +52,22 @@ const pointFactory = function({Id, sanitize}){
             getOverseer:() => overseer,
             getOverseerPhone: () => overseerPhone,
             getTags: () => tags,
+            getImageUri: () => imageUri,
             getCode: () => code,
+            isOpen: () => isOpen,
             getLongitude: () => longitude,
             getLatitude: () => latitude,
+            getPhone: () => phone,
+            getEmail: () => email,
+            getCategory: () => category,
+            getServices: () => services,
             isMovable: () => movable,
-            getDescription: () => description,
+            getDescription: () => sanitizeText,
             getDeletedAt: () => deletedAt,
             getCreatedAt: () => createdAt,
             getUpdatedAt: () => updatedAt,
             getAuthorId: () => authorId,
+            getLoc:() => loc,
             markDeleted: () => {
                 deletedAt = Date.now()
             },

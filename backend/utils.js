@@ -13,7 +13,8 @@ const Id = Object.freeze({
 });
 
 const validator = Object.freeze({
-  isValidEmail: isValidEmail
+  isValidEmail: isValidEmail,
+  isValidPhone: (phone) => typeof phone === 'string' && phone.match(/^\+?[0-9]{10,}$/)
 })
 
 async function makePasswordHash(password) {
@@ -82,9 +83,34 @@ function verifyToken(authorizationHeader){
   const token = authorizationHeader.split(' ')[1];
   let verfiedToken
   try {
-    verfiedToken = jwt.verify(token, process.env.JWT_KEY);
+    verfiedToken = jwt.verify(token, process.env.JWT_KEY,);
   } catch (err) {
-    err.statusCode = 500;
+    err.statusCode = 401;
+    throw err;
+  }
+
+
+  if (!verfiedToken) {
+    const error = new Error("Not Authenticated");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return token;
+}
+function verifyExpiredToken(authorizationHeader){
+  //modify header
+  if (!authorizationHeader) {
+    const error = new Error("Not Authenticated");
+    error.statusCode = 401;
+    throw error;
+  }
+  const token = authorizationHeader.split(' ')[1];
+  let verfiedToken
+  try {
+    verfiedToken = jwt.verify(token, process.env.JWT_KEY,{ignoreExpiration:true});
+  } catch (err) {
+    err.statusCode = 401;
     throw err;
   }
 
@@ -116,12 +142,20 @@ function md5(text) {
     .digest('hex')
 }
 
+function extractUSSDCodeFromPhoneNumber(phone){
+  if(!validator.isValidPhone(phone)){
+    return null
+  };
+  return phone.substr(-5);
+}
+
 const ROLES = Object.freeze({
   ADMIN: "Jg59qTKwpkyD9b02sg085A",
   CLERK: "ck8pm36hy000301jwfro1duse",
   OWNER: "ck8olxgkf000501m988wg51j0",
   SUPERVISOR: "ck8olw0bj000101m98jy529xh",
   USER: "n7XtEg0aNEW_km3FvnvhDg",
+  CLIENT: "ck9dl2oc0000101l37adj4q05",
 });
 
 function verifyPermission(userRole){
@@ -132,13 +166,27 @@ function verifyPermission(userRole){
   }
 }
 
+function verifyPointPermission({userRole, userId, pointAuthor}){
+  if ((userRole != ROLES.ADMIN && userRole != ROLES.OWNER && userRole != ROLES.SUPERVISOR) && (userRole === ROLES.CLIENT && userId !== pointAuthor)  ){
+    const error = new Error("Permission revoked. Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+}
+function verifyServicePermission({userRole, userId, serviceAuthor}){
+  if ((userRole != ROLES.ADMIN && userRole != ROLES.OWNER && userRole != ROLES.SUPERVISOR) && (userRole === ROLES.CLIENT && userId !== serviceAuthor)  ){
+    const error = new Error("Permission revoked. Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+}
+
 function getRoleKey(roleId) {
   for (let key in ROLES) {
     if (ROLES[key] === roleId)
       return key;
   }
 }
-
 
 // async..await is not allowed in global scope, must use a wrapper
 async function mail({from="",to, subject="",text="",html=""}) {
@@ -177,13 +225,17 @@ module.exports = {
   Id,
   ROLES,
   verifyPermission,
+  verifyPointPermission,
+  verifyServicePermission,
   makePasswordHash,
   makeRegistrationToken,
   validator,
+  extractUSSDCodeFromPhoneNumber,
   mail,
   getRoleKey,
   makeToken,
   verifyToken,
+  verifyExpiredToken,
   authenticate,
   decodeToken
 }

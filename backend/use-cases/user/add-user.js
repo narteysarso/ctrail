@@ -24,6 +24,8 @@ module.exports = function makeAddUser({ usersDb }) {
             name: user.getName(),
             phone: user.getPhone(),
             email: user.getEmail(),
+            imageUri: user.getImageUri(),
+            type: user.getType(),
             intlCode: user.getIntlCode(),
             password: user.getPassword(),
             registerToken: user.getRegisterToken(),

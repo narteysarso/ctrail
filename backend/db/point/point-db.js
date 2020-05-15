@@ -11,6 +11,8 @@ module.exports = function makePointsDB({ makeDB }) {
             overseer: 'text',
             overseerPhone: 'text'
         }).catch(err => console.log(err))
+
+        db.collection('points').createIndex({"loc": "2dsphere"}).catch(err => console.log(err));
     });
     return Object.freeze({
         findAll,
@@ -19,13 +21,43 @@ module.exports = function makePointsDB({ makeDB }) {
         countData,
         insert,
         remove,
-        update
+        update,
+        closestLocation
     });
 
     async function findAll({ skip = 0, limit = 100, ...query }) {
         const db = await makeDB();
         const result = await db.collection('points').find(query).skip(skip).limit(limit);
         
+        return (await result.toArray()).map(({ _id: id, ...found }) => ({
+            id,
+            ...found
+        }));
+    }
+
+    async function closestLocation ({latitude, longitude, searchtext, limit = 100, maxDistance = 1000}){
+        const db = await makeDB();
+        
+        const pattern = new RegExp(`^.*${(searchtext.split(' ')).join('|')}.*$`,'i');
+        
+        const pipeline = [
+            {
+                $geoNear: {
+                    near: { type: "Point", coordinates: [parseFloat(longitude), parseFloat(latitude)] },
+                    distanceField: "dist.calculated",
+                    maxDistance,
+                    query: { deletedAt: null, $or:[{name: pattern}, {category: pattern}, {description: pattern}, {tags: pattern}] }, 
+                    includeLocs: "dist.location",
+                    spherical: true
+                }
+            },
+            
+        ];
+
+        pipeline.push({ $limit: limit })
+
+        const result = await db.collection('points').aggregate([...pipeline])
+
         return (await result.toArray()).map(({ _id: id, ...found }) => ({
             id,
             ...found

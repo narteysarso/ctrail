@@ -1,14 +1,20 @@
-const makeAddPoint = require ('./add-point')
-const makeEditPoint = require ('./edit-point')
-const makeRemovePoint = require ('./remove-point')
-const makeListPoints = require ('./list-points')
-const makeCountPoints = require('./count-points')
-const pointsDb = require ('../../db/point');
+const makeAddService = require ('./add-service')
+const makeEditService = require ('./edit-service')
+const makeRemoveService = require ('./remove-service')
+const makeListServices = require ('./list-services')
+const makeListOpenServices = require ('./list-open-services')
+const makeCountServices = require('./count-services')
+const makeFindService = require('./find-service')
+const makeFindServiceByPointId = require('./find-service-by-point-id');
+const servicesDb = require ('../../db/service');
 
-const addPoint = makeAddPoint({ pointsDb})
-const editPoint = makeEditPoint({ pointsDb})
-const listPoints = makeListPoints({ pointsDb })
-const removePoint = makeRemovePoint({ pointsDb })
-const countPoints = makeCountPoints({pointsDb});
+const addService = makeAddService({ servicesDb})
+const editService = makeEditService({ servicesDb})
+const listServices = makeListServices({ servicesDb })
+const listOpenServices = makeListOpenServices({ servicesDb })
+const removeService = makeRemoveService({ servicesDb })
+const countServices = makeCountServices({servicesDb});
+const findOneService = makeFindService({servicesDb});
+const findServiceByPointId = makeFindServiceByPointId({servicesDb});
 
-module.exports = { addPoint, editPoint, listPoints, removePoint , countPoints}
+module.exports = { addService, editService, listServices, removeService , countServices, listOpenServices, findOneService, findServiceByPointId}

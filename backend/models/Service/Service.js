@@ -2,16 +2,18 @@ const serviceFactory = function({Id, sanitize}){
     return function makeService({
         id = Id.makeId(),
         name,
-        code,
         verified = false,
         openTime,
         closeTime,
         tags,
+        rating,
         description,
         available,
+        availability,
         day,
-        point,
+        pointId,
         price,
+        currency,
         authorId,
         createdAt = Date.now(),
         updatedAt = Date.now(),
@@ -22,12 +24,13 @@ const serviceFactory = function({Id, sanitize}){
 
         if (!name)
             throw new Error('Service must have a name');
-        
-        if (!code)
-            throw new Error('Service must have a ussd code');
 
         if (!authorId)
             throw new Error('Service must have a valid author id');
+        
+        if (!pointId)
+            throw new Error('Service must have a belong to a tracking point id');
+        
 
         sanitizeText = sanitize(description);
 
@@ -37,15 +40,15 @@ const serviceFactory = function({Id, sanitize}){
         return Object.freeze({
             getId: () => id,
             getName: () => name,
-            getOverseer:() => overseer,
-            getOverseerPhone: () => overseerPhone,
             getTags: () => tags,
-            getCode: () => code,
             getPrice: () => price,
-            getPoint: () => point,
+            getPointId: () => pointId,
+            getRating: () => rating,
             isVerified: () => verified,
             isAvailable: () => available,
             getDay: () => day,
+            getAvailability: () => availability,
+            getCurrency: () => currency,
             getOpenTime: () => openTime,
             getCloseTime: () => closeTime,
             getDescription: () => description,

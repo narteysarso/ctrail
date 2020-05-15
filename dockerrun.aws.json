@@ -1,0 +1,23 @@
+{
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+        {
+            "name": "frontend",
+            "image": "narteysarso/contact-tracing-client",
+            "hostname":"client",
+            "essential":false
+        },
+        {
+            "name": "nginx",
+            "image" : "narteysarso/contact-tracing-nginx",
+            "essential":true,
+            "portMappings":[
+                {
+                    "hostPort": 80,
+                    "containerPort": 80
+                }
+            ],
+            "links": ["client"]
+        }
+    ]
+}

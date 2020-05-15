@@ -11,15 +11,21 @@ module.exports = function makeEditPoint({ pointsDb}) {
         if (!existing) {
             throw new RangeError('Point not found.')
         }
+        
         const point = makePoint({ ...existing, ...changes, modifiedOn: null })
         
         const updated = await pointsDb.update({
             name: point.getName(),
             code: point.getCode(),
+            imageUri: point.getImageUri(),
             overseer: point.getOverseer(),
             overseerPhone: point.getOverseerPhone(),
+            services: point.getServices(),
             longitude: point.getLongitude(),
             latitude: point.getLatitude(),
+            email: point.getEmail(),
+            phone: point.getPhone(),
+            loc: point.getLoc(),
             description: point.getDescription(),
             authorId: point.getAuthorId(),
             isMovable: point.isMovable(),

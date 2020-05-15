@@ -15,14 +15,15 @@ module.exports = function makeEditService({ servicesDb}) {
         
         const updated = await servicesDb.update({
             name: service.getName(),
-            code: service.getCode(),
             price: service.getPrice(),
             day: service.getDay(),
             openTime: service.getOpenTime(),
             closeTime: service.getCloseTime(),
             description: service.getDescription(),
             authorId: service.getAuthorId(),
-            point: service.getPoint(),
+            currency: service.getCurrency(),
+            availability: service.getAvailability(),
+            pointId: service.getPointId(),
             verified: service.isVerified(),
             available: service.isAvailable(),
             tags: service.getTags(),

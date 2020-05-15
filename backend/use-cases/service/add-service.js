@@ -12,14 +12,16 @@ module.exports = function makeAddService({ servicesDb }) {
 
         return servicesDb.insert({
             name: service.getName(),
-            code: service.getCode(),
             price: service.getPrice(),
+            rating: service.getRating(),
             day: service.getDay(),
             openTime: service.getOpenTime(),
             closeTime: service.getCloseTime(),
             description: service.getDescription(),
+            currency: service.getCurrency(),
+            availability: service.getAvailability(),
             authorId: service.getAuthorId(),
-            point: service.getPoint(),
+            pointId: service.getPointId(),
             verified: service.isVerified(),
             available: service.isAvailable(),
             tags: service.getTags(),

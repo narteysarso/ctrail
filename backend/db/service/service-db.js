@@ -6,16 +6,14 @@ module.exports = function makeServiceDB({ makeDB }) {
         db.collection('services').createIndex({
             name: 'text',
             descripton: 'text',
-            tags: 'text',
-            ghghs: 'text',
-            overseer: 'text',
-            overseerPhone: 'text'
+            tags: 'text'
         }).catch(err => console.log(err))
     });
     return Object.freeze({
         findAll,
         findById,
-        findByServiceId,
+        findByPointId,
+        findOpenServices,
         countData,
         insert,
         remove,
@@ -25,6 +23,16 @@ module.exports = function makeServiceDB({ makeDB }) {
     async function findAll({ skip = 0, limit = 100, ...query }) {
         const db = await makeDB();
         const result = await db.collection('services').find(query).skip(skip).limit(limit);
+        
+        return (await result.toArray()).map(({ _id: id, ...found }) => ({
+            id,
+            ...found
+        }));
+    }
+    
+    async function findOpenServices({ skip = 0, limit = 100, ...query }) {
+        const db = await makeDB();
+        const result = await db.collection('services').find({...query, open: true}).skip(skip).limit(limit);
         
         return (await result.toArray()).map(({ _id: id, ...found }) => ({
             id,
@@ -42,11 +50,11 @@ module.exports = function makeServiceDB({ makeDB }) {
         return { id, ...info };
     }
 
-    async function findByServiceId({ code}) {
+    async function findByPointId({ id}) {
         const db = await makeDB();
-        const query = { code };
-        const result = await db.collection('services').find({ services : ObjectId(_id) });
-        return (await result.toArray).map(({ _id: id, ...found }) => ({
+        
+        const result = await db.collection('services').find({ pointId : id});
+        return (await result.toArray()).map(({ _id: id, ...found }) => ({
             id,
             ...found
         }));

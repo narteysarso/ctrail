@@ -20,6 +20,7 @@ module.exports = function makeRemoveUser({ usersDb }) {
             name: toDelete.getName(),
             phone: toDelete.getPhone(),
             email: toDelete.getEmail(),
+            type: user.getType(),
             isActive: toDelete.getActiveStatus(),
             roleId: toDelete.getRoleId(),
             deletedAt: Date.now(),
