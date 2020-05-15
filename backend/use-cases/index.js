@@ -3,4 +3,5 @@ module.exports = {
     ...require("./log"),
     ...require("./user"),
     ...require("./auth"),
+    ...require("./service"),
 }

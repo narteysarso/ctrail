@@ -29,15 +29,15 @@ services:
         volumes: 
             - ./datadb:/data/db
     
-    # mongodb_ui: 
-    #     image: mongo-express
-    #     restart: always
-    #     links:
-    #         - mongodb
-    #     ports:
-    #         - 8081:8081
-    #     env_file: 
-    #         - docker-compose-mongodb_ui.env
+    mongodb_ui: 
+        image: mongo-express
+        restart: always
+        links:
+            - mongodb
+        ports:
+            - 9000:8081
+        env_file: 
+            - docker-compose-mongodb_ui.env
     
     backend:
         depends_on: 
@@ -53,3 +53,21 @@ services:
         volumes: 
             - /app/node_modules
             - ./backend/:/app
+
+    # backend:
+    #     # depends_on: 
+    #     #     - mongodb
+    #     # links: 
+    #     #     - mongodb
+    #     # ports: 
+    #     #     - 3000:3000
+    #     build:
+    #         context: ./backend
+    #         dockerfile: Dockerfile.dev
+            
+    #     restart: always
+    #     env_file: 
+    #         - docker-compose-backend.env
+    #     # volumes: 
+    #     #     - /app/node_modules
+    #     #     - ./backend/:/app

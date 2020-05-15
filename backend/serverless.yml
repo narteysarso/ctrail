@@ -1,21 +1,21 @@
-service: rest-api
+service: ctrail-api
 
 provider:
   name: aws
-  runtime: nodejs6.10 # set node.js runtime
+  runtime: nodejs12.x  # set node.js runtime
   memorySize: 128 # set the maximum memory of the Lambdas in Megabytes
   timeout: 10 # the timeout is 10 seconds (default is 6 seconds)
   stage: dev # setting the env stage to dev, this will be visible in the routes
   region: us-east-1
   environment:
-    MONGO_PASSWORD:${opt:AWS_MONGO_PASSWORD}
-    MONGO_USERNAME:${opt:AWS_MONGO_USERNAME}
-    MONGO_HOSTNAME:${opt:AWS_MONGO_HOSTNAME}
-    MONGO_PORT:${opt:AWS_MONGO_PORT}
-    MONGO_DB:${opt:AWS_MONGO_DB}
-    JWT_KEY:${opt:AWS_JWT_KEY}
-    MAIL_USERNAME:${opt:AWS_MAIL_USERNAME}
-    MAIL_PASSWORD:${opt:AWS_MAIL_PASSWORD}
+    MONGO_PASSWORD: ${opt:AWS_MONGO_PASSWORD}
+    MONGO_USERNAME: ${opt:AWS_MONGO_USERNAME}
+    MONGO_HOSTNAME: ${opt:AWS_MONGO_HOSTNAME}
+    MONGO_PORT: ${opt:AWS_MONGO_PORT}
+    MONGO_DB: ${opt:AWS_MONGO_DB}
+    JWT_KEY: ${opt:AWS_JWT_KEY}
+    MAIL_USERNAME: ${opt:AWS_MAIL_USERNAME}
+    MAIL_PASSWORD: ${opt:AWS_MAIL_PASSWORD}
 
 functions: # add functions
   # User login
@@ -26,7 +26,34 @@ functions: # add functions
           path: login # path will be domain.name.com/dev/login
           method: post
           cors: true
-          
+  
+  # register user
+  # registerUser:
+  #   handler: handler.registerUser # point to exported create function in handler.js
+  #   events:
+  #     - http:
+  #         path: user/register # path will be domain.name.com/dev/register
+  #         method: post
+  #         cors: true
+  
+  # renew token
+  renewExpiredToken:
+    handler: handler.renewExpiredToken # point to exported create function in handler.js
+    events:
+      - http:
+          path: user/token # path will be domain.name.com/dev/user/token
+          method: post
+          cors: true
+  
+  # register client
+  registerClient:
+    handler: handler.registerClient # point to exported create function in handler.js
+    events:
+      - http:
+          path: client # path will be domain.name.com/dev/client
+          method: post
+          cors: true
+   
   # User logout
   logoutUser:
     handler: handler.signOut # point to exported create function in handler.js
@@ -45,7 +72,6 @@ functions: # add functions
           method: post
           cors: true
   
-  
   # User handlers
   registerUser:
     handler: handler.registerUser # point to exported create function in handler.js
@@ -63,7 +89,7 @@ functions: # add functions
           path: user/setup_account # path will be domain.name.com/dev/user
           method: post
           cors: true
-          
+    
   # User setup password
   setupUserPassword:
     handler: handler.setupPassword # point to exported create function in handler.js
@@ -73,7 +99,6 @@ functions: # add functions
           method: post
           cors: true
 
-    
   # User handlers
   createUser:
     handler: handler.createUser # point to exported create function in handler.js
@@ -119,8 +144,37 @@ functions: # add functions
           method: get
           cors: true
 
+  createService:
+    handler: handler.createService # point to exported createService function in handler.js
+    events:
+      - http:
+          path: service #path will be domain.name.com/dev/service
+          method: post
+          cors: true
+
+  updateService:
+    handler: handler.editService # point to exported createService function in handler.js
+    events:
+      - http:
+          path: service #path will be domain.name.com/dev/service
+          method: put
+          cors: true
   
-  
+  removeService:
+    handler: handler.removeService # point to exported createService function in handler.js
+    events:
+      - http:
+          path: service/{id} #path will be domain.name.com/dev/service/1
+          method: delete
+          cors: true
+  getPointService:
+    handler: handler.getServicesByPointId # point to exported createService function in handler.js
+    events:
+      - http:
+          path: service/point/{id} #path will be domain.name.com/dev/service/1
+          method: get
+          cors: true
+
   # Log handlers
   createLog:
     handler: handler.createLog # point to exported create function in handler.js
@@ -129,7 +183,6 @@ functions: # add functions
           path: log # path will be domain.name.com/dev/log
           method: post
           cors: true
-
 
   # Point handlers
   createPoint:
@@ -156,6 +209,14 @@ functions: # add functions
           method: get
           cors: true
 
+  findClosestPoints:
+    handler: handler.findClosestPoints
+    events:
+      - http:
+          path: point/findclosestlocation/ # path will be domain.name.com/dev/point/findClosestLocation
+          method: get
+          cors: true
+
   removePoint:
     handler: handler.removePoint
     events: 
@@ -171,8 +232,6 @@ functions: # add functions
           path: point # path will be domain.name.com/dev/point/1
           method: get
           cors: true
-
-  
 
   findContactLogs:
     handler: handler.findContactLogs # path will be domain.name.com/dev/notes/1

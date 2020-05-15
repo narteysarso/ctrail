@@ -1,5 +1,5 @@
-const {addPoint, countPoints, listPoints,removePoint, editPoint} = require("../use-cases");
-const { verifyToken, decodeToken } = require("../utils")
+const {addPoint, countPoints, listPoints,removePoint, editPoint, findClosestPoint} = require("../use-cases");
+const { verifyToken, decodeToken, verifyPointPermission, extractUSSDCodeFromPhoneNumber } = require("../utils")
 /**
  * @async
  * @name createPoint
@@ -15,17 +15,20 @@ module.exports.createPoint = async (event, context, callback) => {
     try {
         if (!event.body)
             throw ("No data submitted");
-
-        const token = await verifyToken(event.headers['Authorization']);
+        const authBearer = event.headers['Authorization'] || event.headers['authorization']
+        const token = await verifyToken(authBearer);
         const decodedToken = decodeToken(token)
-        const result = await addPoint({...JSON.parse(event.body), authorId: decodedToken['id']});
+        const pointObject = JSON.parse(event.body);
+        
+        const code = extractUSSDCodeFromPhoneNumber(pointObject['phone'] || pointObject['overseerPhone']);
+        const result = await addPoint({...pointObject,code, authorId: decodedToken['id']});
 
         callback(null, {
             statusCode: 200,
             body: JSON.stringify({"data": result, "message": "Tracking point added"})
         });
     } catch (err) {
-        
+        console.log(err)
         callback(null, {
             statusCode: err.statusCode || 500,
             headers: { 'Content-Type': 'text/plain' },
@@ -41,17 +44,23 @@ module.exports.editPoint = async (event, context, callback) => {
     try {
         if (!event.body)
             throw ("No data submitted");
+        const authBearer = event.headers['Authorization'] || event.headers['authorization']
+        const pointObject = JSON.parse(event.body);
+        const token = await verifyToken(authBearer);
+        const decodedToken = decodeToken(token);
 
-        const token = await verifyToken(event.headers['Authorization']);
-        const decodedToken = decodeToken(token)
-        const result = await editPoint({...JSON.parse(event.body), authorId: decodedToken['id']});
+        const point = await listPoints({id: pointObject.id});
+        
+        verifyPointPermission({userId:decodedToken['id'], userRole:decodedToken['role'], pointAuthor:point.authorId});
+
+        const result = await editPoint({authorId: decodedToken['id'], ...pointObject });
 
         callback(null, {
             statusCode: 200,
             body: JSON.stringify({"data": result, "message": "Tracking point updated"})
         });
     } catch (err) {
-        
+        console.log(err)
         callback(null, {
             statusCode: err.statusCode || 500,
             headers: { 'Content-Type': 'text/plain' },
@@ -121,6 +130,42 @@ module.exports.searchPoints = async (event, context, callback) => {
         });
         
     } catch (error) {
+        // console.log(error);
+        callback(null, {
+            statusCode: error.statusCode || 500,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "message": error.message })
+        }); 
+    }
+}
+
+module.exports.findClosestPoints = async (event,context, callback)=> {
+    context.callbackWaitsForEmptyEventLoop = false;
+
+    try {
+        const {lat:latitude, long:longitude, searchtext = ''} = event.queryStringParameters;
+        // const authBearer = event.headers['Authorization'] || event.headers['authorization'];
+        // const token = await verifyToken(authBearer);
+
+        const result = await findClosestPoint({ 
+            latitude, 
+            longitude,
+            searchtext
+        });
+
+        let message = "";
+        let statusCode = 200;
+        if (result.length < 1) {
+            message = "No tracking point found";
+            statusCode = 404;
+        }
+        const filteredResult = result.filter((point) => !point.deletedAt)
+
+        callback(null, {
+            statusCode,
+            body: JSON.stringify({ "data": filteredResult, message })
+        });
+    } catch (error) {
         console.log(error);
         callback(null, {
             statusCode: error.statusCode || 500,
@@ -136,9 +181,14 @@ module.exports.removePoint = async (event, context, callback) => {
     try {
         
         const {id} = event.pathParameters;
-    
-        const token = await verifyToken(event.headers['Authorization']);
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
+        const token = await verifyToken(authBearer);
+        const decodedToken = decodeToken(token);
+
+        const point = await listPoints({ id });
         
+        verifyPointPermission({userId:decodedToken['id'], userRole:decodedToken['role'], pointAuthor:point.authorId});
+
         const result = await removePoint({id});
         let message = "Tracking point removed";
         let statusCode = 200;

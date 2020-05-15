@@ -1,5 +1,5 @@
 const {login, invalidateToken, isInvalidatedToken, listUsers, editUser} = require('../use-cases');
-const {verifyToken,decodeToken, makeToken, makePasswordHash, ROLES} = require("../utils")
+const {verifyToken, verifyExpiredToken, decodeToken, makeToken, makePasswordHash, ROLES} = require("../utils")
 
 /**
  * @async
@@ -19,11 +19,12 @@ module.exports.signIn = async (event, context, callback) =>{
         
         
         const result = await login(JSON.parse(event.body));
-        
+        const {registerToken, ...userInfo} = result;
+
         callback(null, {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(result)
+            body: JSON.stringify(userInfo)
         });
     } catch (err) {
         console.log(err);
@@ -31,7 +32,7 @@ module.exports.signIn = async (event, context, callback) =>{
             statusCode: err.statusCode || 500,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({"message":err.message})
-        })
+        });
     }
 
 }
@@ -123,6 +124,16 @@ module.exports.setupTokenVerify = async (event, context, callback) => {
     }
 }
 
+
+/**
+ * @async
+ * @name setupPassword
+ * @description setup password for first time upon registration
+ * @param event Object
+ * @param context object
+ * @param callback function
+ * @returns null
+ */
 module.exports.setupPassword = async (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
@@ -130,12 +141,12 @@ module.exports.setupPassword = async (event, context, callback) => {
         if (!event.body)
             throw ("No data submitted");
         
-        const authBearer = event.headers['Authorization'];
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
 
         const token = await verifyToken(authBearer);
         const decodedToken = await decodeToken(token);
         const body = JSON.parse(event.body);
-        invalidateToken(token);
+        // invalidateToken(token);
 
         if(body['password'] !== body['confirm_password']){
             const error = new Error("Passwords do not match");
@@ -168,6 +179,50 @@ module.exports.setupPassword = async (event, context, callback) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ "message": err.message })
         })
+    }
+
+}
+
+/**
+ * @async
+ * @name signOut
+ * @description Sign user out
+ * @param event Object
+ * @param context object
+ * @param callback function
+ * @returns null
+ */
+module.exports.renewExpiredToken = async (event, context, callback) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+
+    try {
+
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
+
+        const token = await verifyExpiredToken(authBearer);
+        const decodedToken = decodeToken(token);
+        await isInvalidatedToken(token);
+
+        const result = invalidateToken(token);
+        if (!result) {
+            const error = new Error("Token invalidation failed");
+            error.statusCode = 500;
+            throw error;
+
+        }
+
+        const newToken = makeToken(decodedToken);
+        callback(null, {
+            statusCode: 200,
+            body: JSON.stringify({token: newToken})
+        });
+
+    } catch (err) {
+        console.log(err);
+        callback(null, {
+            statusCode: err.statusCode || 500,
+            body: JSON.stringify({ "message": err.message })
+        });
     }
 
 }

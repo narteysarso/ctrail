@@ -4,6 +4,8 @@ jspm_packages
 
 *.env
 
+docker-compose*
+
 
 # Serverless directories
 .serverless

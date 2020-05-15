@@ -5,10 +5,12 @@ function userFactory({Id, validator, ROLES}){
         email,
         phone,
         intlCode,
+        type = 'client',
         passwordHash,
         registerToken,
+        imageUri,
         isActive = true,
-        roleId = ROLES.USER,
+        roleId = ROLES.CLIENT,
         createdAt = Date.now(),
         updatedAt = Date.now(),
         deletedAt
@@ -34,6 +36,7 @@ function userFactory({Id, validator, ROLES}){
             getEmail: () => email,
             getIntlCode: () => intlCode,
             getPhone: () => phone,
+            getType: () => type,
             getActiveStatus: () => isActive,
             getRegisterToken: () => registerToken,
             getDeletedAt: () => deletedAt,
@@ -41,6 +44,7 @@ function userFactory({Id, validator, ROLES}){
             getUpdatedAt: () => updatedAt,
             getPassword: () => passwordHash,
             getRoleId: () => roleId,
+            getImageUri: () => imageUri,
             markDeleted: () => {
                 deletedAt = Date.now()
             },
