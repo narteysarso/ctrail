@@ -5,7 +5,8 @@
             "name": "frontend",
             "image": "narteysarso/contact-tracing-client",
             "hostname":"client",
-            "essential":false
+            "essential":false,
+            "memory": 128
         },
         {
             "name": "nginx",
@@ -17,7 +18,8 @@
                     "containerPort": 80
                 }
             ],
-            "links": ["client"]
+            "links": ["client"],
+            "memory" : 128
         }
     ]
 }

@@ -1,4 +1,4 @@
-const {addPoint, countPoints, listPoints,removePoint, editPoint, findClosestPoint} = require("../use-cases");
+const {addPoint, countPoints, findPointsByAuthorId, listPoints,removePoint, editPoint, findClosestPoint} = require("../use-cases");
 const { verifyToken, decodeToken, verifyPointPermission, extractUSSDCodeFromPhoneNumber } = require("../utils")
 /**
  * @async
@@ -102,6 +102,42 @@ module.exports.getPoints = async (event, context, callback) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ "message": error.message })
         }); 
+    }
+}
+
+module.exports.getMyPoints = async (event, context, callback) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+
+    try {
+
+        const data = [];
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
+        const token = await verifyToken(authBearer);
+        const decodedToken = decodeToken(token);
+
+        const dataCount = await countPoints();
+        data['deletedAt'] = null;
+        data['authorId'] = decodedToken['id'];
+        const result = await findPointsByAuthorId((data ? data : {}));
+        let message = "";
+        let statusCode = 200;
+        if (result.length < 1) {
+            message = "No tracking point added";
+            statusCode = 404;
+        }
+
+        callback(null, {
+            statusCode,
+            body: JSON.stringify({ dataCount, "data": result, message })
+        });
+
+    } catch (error) {
+        console.log(error);
+        callback(null, {
+            statusCode: error.statusCode || 500,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "message": error.message })
+        });
     }
 }
 

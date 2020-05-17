@@ -12,7 +12,7 @@ script:
     - docker run narteysarso/contact-tracing-client-test yarn run test --watchAll=false
 
 after_success:
-    - docker build --build-arg SERVICE_PROVIDER_NAME=aws NODE_RUNTIME=12.16 AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY AWS_MONGO_USERNAME=$AWS_MONGO_USERNAME AWS_MONGO_PASSWORD=$AWS_MONGO_PASSWORD AWS_MONGO_HOSTNAME=$AWS_MONGO_HOSTNAME AWS_MONGO_PORT=$AWS_MONGO_PORT AWS_MONGO_DB=$AWS_MONGO_DB AWS_JWT_KEY=$AWS_JWT_KEY AWS_MAIL_HOST=$AWS_MAIL_HOST AWS_MAIL_USERNAME=$AWS_MAIL_USERNAME AWS_MAIL_PASSWORD=$AWS_MAIL_PASSWORD -t narteysarso/contact-tracing-api ./backend
+    - docker build --build-arg SERVICE_PROVIDER_NAME=aws --build-arg NODE_RUNTIME=12.16 --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --build-arg AWS_MONGO_USERNAME=$AWS_MONGO_USERNAME --build-arg AWS_MONGO_PASSWORD=$AWS_MONGO_PASSWORD --build-arg AWS_MONGO_HOSTNAME=$AWS_MONGO_HOSTNAME --build-arg AWS_MONGO_PORT=$AWS_MONGO_PORT --build-arg AWS_MONGO_DB=$AWS_MONGO_DB --build-arg AWS_JWT_KEY=$AWS_JWT_KEY --build-arg AWS_MAIL_HOST=$AWS_MAIL_HOST --build-arg AWS_MAIL_USERNAME=$AWS_MAIL_USERNAME --build-arg AWS_MAIL_PASSWORD=$AWS_MAIL_PASSWORD -t narteysarso/contact-tracing-api ./backend
     - docker build -t narteysarso/contact-tracing-client ./frontend
     - docker build -t narteysarso/contact-tracing-nginx ./nginx
 
