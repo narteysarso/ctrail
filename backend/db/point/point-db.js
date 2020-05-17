@@ -18,6 +18,7 @@ module.exports = function makePointsDB({ makeDB }) {
         findAll,
         findById,
         findByServiceCode,
+        findByAuthorId,
         countData,
         insert,
         remove,
@@ -73,6 +74,18 @@ module.exports = function makePointsDB({ makeDB }) {
         const { _id: id, ...info } = found[0];
         return { id, ...info };
     }
+    async function findByAuthorId({ authorId, ...query}) {
+        const db = await makeDB()
+        const result = await db.collection('points').find({ authorId: ObjectId(authorId), ...query });
+        const found = await result.toArray();
+        if (found.length === 0) return null
+
+        return found.map(({ _id: id, ...found }) => ({
+            id,
+            ...found
+        }));
+        
+    }
 
     async function findByServiceCode({ code}) {
         const db = await makeDB();
@@ -101,7 +114,8 @@ module.exports = function makePointsDB({ makeDB }) {
 
     async function update({ id: _id, ...pointInfo }) {
         const db = await makeDB();
-        const result = await db.collection('points').updateOne({ _id: ObjectId(_id) }, { $set: { ...pointInfo } });
+        const authorId = ObjectId(pointInfo['authorId']);
+        const result = await db.collection('points').updateOne({ _id: ObjectId(_id) }, { $set: { ...pointInfo, authorId } });
         return result.modifiedCount > 0 ? { id: _id, ...pointInfo } : null
     }
 

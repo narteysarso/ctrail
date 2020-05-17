@@ -1,18 +1,18 @@
 version: "3"
 
 services: 
-    frontend:
-        links: 
-            - backend
-        build: 
-            context: ./frontend
-            dockerfile: Dockerfile.dev
-        tty: true
-        env_file: 
-            - ./frontend/.env
-        volumes: 
-            - /app/node_modules
-            - ./frontend:/app
+    # frontend:
+    #     links: 
+    #         - backend
+    #     build: 
+    #         context: ./frontend
+    #         dockerfile: Dockerfile.dev
+    #     tty: true
+    #     env_file: 
+    #         - ./frontend/.env
+    #     volumes: 
+    #         - /app/node_modules
+    #         - ./frontend:/app
     nginx: 
         ports: 
             - 3050:80
@@ -39,35 +39,35 @@ services:
         env_file: 
             - docker-compose-mongodb_ui.env
     
-    backend:
-        depends_on: 
-            - mongodb
-        links: 
-            - mongodb
-        build:
-            context: ./backend
-            dockerfile: Dockerfile.dev
-        restart: always
-        env_file: 
-            - docker-compose-backend.env
-        volumes: 
-            - /app/node_modules
-            - ./backend/:/app
-
     # backend:
-    #     # depends_on: 
-    #     #     - mongodb
-    #     # links: 
-    #     #     - mongodb
-    #     # ports: 
-    #     #     - 3000:3000
+    #     depends_on: 
+    #         - mongodb
+    #     links: 
+    #         - mongodb
     #     build:
     #         context: ./backend
     #         dockerfile: Dockerfile.dev
-            
     #     restart: always
     #     env_file: 
     #         - docker-compose-backend.env
+    #     volumes: 
+    #         - /app/node_modules
+    #         - ./backend/:/app
+
+    backend:
+        # depends_on: 
+        #     - mongodb
+        # links: 
+        #     - mongodb
+        # ports: 
+        #     - 3000:3000
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+            
+        restart: always
+        env_file: 
+            - docker-compose-backend.env
     #     # volumes: 
     #     #     - /app/node_modules
     #     #     - ./backend/:/app

@@ -232,6 +232,14 @@ functions: # add functions
           path: point # path will be domain.name.com/dev/point/1
           method: get
           cors: true
+  
+  getMyPoints:
+    handler: handler.getMyPoints
+    events:
+      - http:
+          path: point/personal # path will be domain.name.com/dev/point/1
+          method: get
+          cors: true
 
   findContactLogs:
     handler: handler.findContactLogs # path will be domain.name.com/dev/notes/1
