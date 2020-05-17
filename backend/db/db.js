@@ -12,7 +12,7 @@ const MongoClient = mongodb.MongoClient;
 const url = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}/test?retryWrites=true&w=majority`;
 const dbName = MONGO_DB;
 const client = new MongoClient(url, { useNewUrlParser: true });
-console.log(url);
+// console.log(url);
 module.exports = async function makeDB() {
      if (!client.isConnected())
         await client.connect();
