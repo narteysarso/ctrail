@@ -21,23 +21,23 @@ services:
             context: ./nginx
         depends_on: 
             - backend
-    mongodb:
-        image: mongo
-        restart: always
-        env_file: 
-            - docker-compose-mongodb.env
-        volumes: 
-            - ./datadb:/data/db
+    # mongodb:
+    #     image: mongo
+    #     restart: always
+    #     env_file: 
+    #         - docker-compose-mongodb.env
+    #     volumes: 
+    #         - ./datadb:/data/db
     
-    mongodb_ui: 
-        image: mongo-express
-        restart: always
-        links:
-            - mongodb
-        ports:
-            - 9000:8081
-        env_file: 
-            - docker-compose-mongodb_ui.env
+    # mongodb_ui: 
+    #     image: mongo-express
+    #     restart: always
+    #     links:
+    #         - mongodb
+    #     ports:
+    #         - 9000:8081
+    #     env_file: 
+    #         - docker-compose-mongodb_ui.env
     
     # backend:
     #     depends_on: 
@@ -67,7 +67,7 @@ services:
             
         restart: always
         env_file: 
-            - docker-compose-backend.env
+            - docker-compose-backend-prod.env
     #     # volumes: 
     #     #     - /app/node_modules
     #     #     - ./backend/:/app

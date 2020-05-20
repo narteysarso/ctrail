@@ -23,7 +23,7 @@ module.exports = function makeRemovePoint({ pointsDb }) {
         await pointsDb.update({
             id: toDelete.getId(),
             name: toDelete.getName(),
-            imageUri: point.getImageUri(),
+            imageUri: toDelete.getImageUri(),
             description: toDelete.getDescription(),
             isMovable: toDelete.isMovable(),
             longitude: toDelete.getLongitude(),

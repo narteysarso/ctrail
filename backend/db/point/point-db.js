@@ -36,7 +36,7 @@ module.exports = function makePointsDB({ makeDB }) {
         }));
     }
 
-    async function closestLocation ({latitude, longitude, searchtext, limit = 100, maxDistance = 1000}){
+    async function closestLocation ({latitude, longitude, searchtext, limit = 100, maxDistance = 6375000}){
         const db = await makeDB();
         
         const pattern = new RegExp(`^.*${(searchtext.split(' ')).join('|')}.*$`,'i');
