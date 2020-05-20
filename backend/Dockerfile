@@ -21,8 +21,6 @@ WORKDIR /app
 
 RUN npm install -g --unsafe-perm serverless
 
-RUN npm install -g serverless-plugin-reducer
-
 COPY ./package.json ./
 
 RUN npm install 

@@ -24,6 +24,7 @@
     "devDependencies": {
         "faker": "^4.1.0",
         "jest": "^24.3.1",
-        "serverless-offline": "*"
+        "serverless-offline": "*",
+        "serverless-plugin-reducer":"*"
     }
 }
