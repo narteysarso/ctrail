@@ -51,7 +51,7 @@ module.exports.signOut = async (event, context, callback) => {
 
     try{
         
-        const authBearer = event.headers['Authorization'];
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
         
         const token = await verifyToken(authBearer);
         
