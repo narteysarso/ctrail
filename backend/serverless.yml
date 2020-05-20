@@ -261,9 +261,4 @@ package:
   individually: true
 
 plugins:
-- serverless-offline # adding the plugin to be able to run the offline emulation
-- serverless-plugin-reducer
-
-custom:
-  serverless-offline:
-    host: 0.0.0.0
+  - serverless-plugin-reducer
