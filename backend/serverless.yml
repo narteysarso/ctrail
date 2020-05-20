@@ -211,6 +211,10 @@ functions: # add functions
 
   findClosestPoints:
     handler: handler.findClosestPoints
+    package:
+      include:
+        - functions/point-func.js
+        
     events:
       - http:
           path: point/findclosestlocation/ # path will be domain.name.com/dev/point/findClosestLocation
