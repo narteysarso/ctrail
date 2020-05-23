@@ -211,10 +211,6 @@ functions: # add functions
 
   findClosestPoints:
     handler: handler.findClosestPoints
-    package:
-      include:
-        - functions/point-func.js
-        
     events:
       - http:
           path: point/findclosestlocation/ # path will be domain.name.com/dev/point/findClosestLocation
@@ -261,8 +257,9 @@ functions: # add functions
          method: post
          cors: true
 
-package:
-  individually: true
-
 plugins:
-  - serverless-plugin-reducer
+- serverless-offline # adding the plugin to be able to run the offline emulation
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0

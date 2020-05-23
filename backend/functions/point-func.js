@@ -1,4 +1,4 @@
-const {addPoint, countPoints, findPointsByAuthorId, listPoints,removePoint, editPoint, findClosestPoint} = require("../use-cases");
+const {addPoint, countPoints, findPointsByAuthorId, listPoints,removePoint, editPoint, findClosestPoint} = require("../use-cases/point/");
 const { verifyToken, decodeToken, verifyPointPermission, extractUSSDCodeFromPhoneNumber } = require("../utils")
 /**
  * @async
@@ -15,7 +15,7 @@ module.exports.createPoint = async (event, context, callback) => {
     try {
         if (!event.body)
             throw ("No data submitted");
-        const authBearer = event.headers['Authorization'] || event.headers['authorization']
+        const authBearer = event.headers['Authorization'] || event.headers['authorization'];
         const token = await verifyToken(authBearer);
         const decodedToken = decodeToken(token)
         const pointObject = JSON.parse(event.body);
@@ -103,7 +103,7 @@ module.exports.getPoints = async (event, context, callback) => {
             body: JSON.stringify({ "message": error.message })
         }); 
     }
-}
+};
 
 module.exports.getMyPoints = async (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -139,7 +139,7 @@ module.exports.getMyPoints = async (event, context, callback) => {
             body: JSON.stringify({ "message": error.message })
         });
     }
-}
+};
 
 module.exports.searchPoints = async (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -173,7 +173,7 @@ module.exports.searchPoints = async (event, context, callback) => {
             body: JSON.stringify({ "message": error.message })
         }); 
     }
-}
+};
 
 module.exports.findClosestPoints = async (event,context, callback)=> {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -186,7 +186,8 @@ module.exports.findClosestPoints = async (event,context, callback)=> {
         const result = await findClosestPoint({ 
             latitude, 
             longitude,
-            searchtext
+            searchtext, 
+            deletedAt: null
         });
 
         let message = "";
@@ -195,11 +196,10 @@ module.exports.findClosestPoints = async (event,context, callback)=> {
             message = "No tracking point found";
             statusCode = 404;
         }
-        const filteredResult = result.filter((point) => !point.deletedAt)
 
         callback(null, {
             statusCode,
-            body: JSON.stringify({ "data": filteredResult, message })
+            body: JSON.stringify({ "data": result, message })
         });
     } catch (error) {
         console.log(error);
@@ -209,7 +209,7 @@ module.exports.findClosestPoints = async (event,context, callback)=> {
             body: JSON.stringify({ "message": error.message })
         }); 
     }
-}
+};
 
 module.exports.removePoint = async (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -246,4 +246,4 @@ module.exports.removePoint = async (event, context, callback) => {
             body: JSON.stringify({ "message": error.message })
         }); 
     }
-}
+};
