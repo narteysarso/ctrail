@@ -257,8 +257,9 @@ functions: # add functions
          method: post
          cors: true
 
-package:
-  individually: true
-
 plugins:
-  - serverless-plugin-reducer
+- serverless-offline # adding the plugin to be able to run the offline emulation
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
